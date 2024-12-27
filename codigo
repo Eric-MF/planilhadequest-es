@@ -1,0 +1,100 @@
+/** @OnlyCurrentDoc */
+const plan = SpreadsheetApp.getActiveSheet();
+  //cópia do código separadamente
+function passar_valores(e) {
+  //Verifica se a célula está certa antes de continuar
+    if (e.range.columnStart !== 5 || e.range.rowStart !== 14 || e.range.getSheet().getName() !==  "Apostila em Questões" || e.value !== "TRUE" || !e.value) return
+  //Move seletor para Link de questões
+    plan.getRange(14,8).activate()
+  //Desmarca checkbox
+    e.range.uncheck()
+    
+  //Define variáveis
+    QuantidadeDeColunas = plan.getRange('E13').getValue();
+    FonteDeInsercao = plan.getRange(14,6,1,QuantidadeDeColunas);
+    const UltimaLinha = plan.getLastRow();
+    const ValoresDaColuna = plan.getRange("E1:E"+UltimaLinha).getValues();
+    const LinhaDeInsercao  = UltimaLinha - ValoresDaColuna.reverse().findIndex(c=>c[0]!='')+1;
+
+  //Condicional para adicionar nova linha
+    if (UltimaLinha >25) {
+      console.log(UltimaLinha)
+      plan.insertRowAfter(UltimaLinha)
+    }
+
+  //Adiciona valores ao final da tabela
+    FonteDeInsercao.copyTo(plan.getRange("F"+LinhaDeInsercao), {contentsOnly:true})
+    if (LinhaDeInsercao<=7){
+      plan.getRange("E"+LinhaDeInsercao).setValue("1")
+    } else {
+      plan.getRange("E"+LinhaDeInsercao).setValue(plan.getRange("E"+(LinhaDeInsercao-1)).getValue()+1)
+    }
+
+  //Abre página
+    linkQ = plan.getRange(14,8).getValue();
+    linkA = plan.getRange(14,7).getValue();
+    if (linkQ == '#N/A'){
+      conferenciaRevisao(true);
+    }
+
+    if (linkA == 'Revisão'){
+      link = GETLINK('H14')
+    } else {
+      link = GETLINK('G14')
+    }
+
+    openUrl(link);
+
+}
+
+function NovaLinha() {
+  plan.getActiveSheet().insertRowsBefore(spreadsheet.getActiveRange().getRow(), 10);
+}
+
+function GETLINK(input){
+  URL = SpreadsheetApp.getActiveSheet().getRange(input).getRichTextValue().getLinkUrl();
+  return URL
+
+}
+
+function openUrl(link){
+  let html = '<h1></h1><script>window.onload = function(){google.script.run.withSuccessHandler(function(url){window.open(url,"_blank");google.script.host.close();}).getMyUrl("'+link+'");}</script>';
+  SpreadsheetApp.getUi().showModelessDialog(HtmlService.createHtmlOutput(html),"Abrindo...");
+}
+
+function getMyUrl(link) {
+  return link;
+}
+
+function conferenciaRevisao(uncheckForcarRevisao){
+  // Dados a serem verificados
+    pDadosNome = 'Planejamento'
+    cDadosRevisao = ['E5','E12','E13','E14' ]
+    p = SpreadsheetApp.getActive().getSheetByName(pDadosNome)
+    cRevisaoAtivada = p.getRange(cDadosRevisao[2])
+
+  //Dados a serem atualizados
+    pQuestoesNome = 'Apostila em Questões';
+    p2 = SpreadsheetApp.getActive().getSheetByName(pQuestoesNome);
+
+  // Desmarca Forçar Revisão se valor for passado na função
+    if (uncheckForcarRevisao) p.getRange(cDadosRevisao[0]).uncheck();
+
+  //Verifica se é necessário continuar
+    if (p.getRange(cDadosRevisao[3]).getValue()  && cRevisaoAtivada.getValue() && p.getRange(cDadosRevisao[0]).getValue() || p.getRange(cDadosRevisao[1]).getValue()) return
+    if (cRevisaoAtivada.getValue() == false && p.getRange(cDadosRevisao[0]).getValue() == false && p.getRange(cDadosRevisao[1]).getValue() == false) return
+
+  //Atualiza dados de acordo com necessidade
+    if (p.getRange(cDadosRevisao[0]).getValue() || p.getRange(cDadosRevisao[1]).getValue()){
+      p2.getRange('G14').setValue('Revisão');
+      p2.getRange('H14').setFormula('=QUERY(D17:$J;"select H where \'"&F14&"\' = F and \'Errei\' = J and 2 > D order by E limit 1";0)');
+      cRevisaoAtivada.check();
+    } else {
+      p2.getRange('G14').setFormula('=INDIRECT("N"&MATCH(SMALL(R:R;1);R:R;0);1)');
+      p2.getRange('H14').setValue('');
+      p.getRange(cDadosRevisao[3]).setFormula('=Today()');
+      p.getRange(cDadosRevisao[3]).setValue(p.getRange(cDadosRevisao[3]).getValue());
+      cRevisaoAtivada.uncheck();
+    }
+ 
+}
