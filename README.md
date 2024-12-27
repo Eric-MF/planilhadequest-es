@@ -19,7 +19,7 @@ Obs.: Essa fase é importante pois nem todos os aspectos da planilha são transf
 ![Captura de Tela (56)](https://github.com/user-attachments/assets/d1c12027-a12c-42a7-b75b-02afedf3647d)
 9. Insira um acionador diário para a macro 'conferenciaRevisão':
 ![Captura de Tela (57)](https://github.com/user-attachments/assets/3e21449e-e0d4-46e0-a970-489fde0f0e7f)
-10. Insira o link da questão resovida na célula 'H14' da planilha 'Apostila em Questões' e permita acesso a conteúdo externo:
+10. Insira o link da questão resovida na célula 'H14' da planilha 'Apostila em Questões' e permita acesso a conteúdo externo e marque a checkbox 'E14' para adicionar os dados da questão:
 ![Captura de Tela (58)](https://github.com/user-attachments/assets/3742eaad-ea66-4891-8784-ae32c49735a8)
 11. Depois de feito isso os link de filtro serão abertos automáticamente em ordem:
 ![Captura de Tela (59)](https://github.com/user-attachments/assets/95b34d23-36f0-43f5-87e0-88ed77df9e0f)
